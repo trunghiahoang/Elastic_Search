@@ -28,3 +28,46 @@ Please note the 8.x installation section of the article. Since using eland to up
 
 Eland 
 Eland can be installed from PyPI using Pip:
+
+    python -m pip install eland
+
+You can also install Eland from the Conda Forge using Conda:
+
+    conda -c install conda-forge eland
+
+ Users who wish to use Eland without installing it, in order to run only the available scripts, can build a Docker container:
+
+    https://github.com/elastic/eland.git
+    cd eland
+    docker build -t elastic/eland .
+    
+
+Eland encapsulates the conversion and chunking process of the Hugging Face converter model into its TorchScript representation in a Python method; therefore, this is the recommended import method.
+
+ Install the Eland Python client .
+
+Run the eland_import_hub_model script. For example:
+
+    eland_import_hub_model \
+          --url http://localhost:9200/ \
+          --hub-model-id elastic/distilbert-base-cased-finetuned-conll03-english \
+          --task-type ner \
+          --start
+
+ Specify the URL to access your cluster. For example, https://<user>:<password>@<hostname>:<port>. 
+ Specify the model's identifier in the Hugging Face Model Center. 
+ Specify the type of NLP task. Supported values ​​are fill_mask, ner, text_classification, text_embedding, question_answering and zero_shot_classification.
+![enter image description here](https://img-blog.csdnimg.cn/cfee5d914b944a8c8c0e4f48d4b8c275.png)
+
+Deploy text embedding model 
+
+The first step is to install the text embedding model. For our model, we use Hugging Face ’s msmarco-distilbert-base-tas-b . This is a sentence transformation model that maps a sentence or a paragraph to a 768-dimensional dense vector. The model is optimized for semantic search and trained specifically on the MS MARCO Passage dataset, making it suitable for our task. In addition to this model, Elasticsearch also supports many other text embedding models. The full list can be found here. 
+
+We use the Eland docker agent installation model we built in the NER sample . Run the following script to import our model into our local cluster and deploy it:
+
+Above, please note that you need to replace the username and password parts above according to your own situation. You also need to modify the corresponding Elasticsearch address. 
+Here, since we are using a self-signed installation, I installed using the --insecuer option to circumvent SSL's security certificate check.
+
+If we want to use a self-signed certificate to ensure secure uploading, we can use the following command:
+
+Above, we used the -v flag to install a local http_ca.crt certificate into the container in docker. The result of running the above command is:
